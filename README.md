@@ -24,3 +24,5 @@ dies.
 - If player dies, the game is over.
 
 Example:
+
+![Example2](https://user-images.githubusercontent.com/80070761/153884714-8fac9c58-b7c4-4bc2-9c38-e1c698d9eba1.gif)
