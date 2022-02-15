@@ -4,24 +4,27 @@
 - [Pygame primer](https://realpython.com/pygame-a-primer/#sprite-groups)
 - [Pygame sprites and groups](https://kidscancode.org/blog/2016/08/pygame_1-2_working-with-sprites/)
 
-You already have player that can move and plant a bomb.
+You already have a player that can move and plant a bomb.
 Now you have to implement such features:
-- Bomb should explode in few seconds after the planting.
-- In the explosion, bomb generates fire for 5 cells in 
-four directions. Fire exists for a small amount of 
-time. Fire cannot spread over the wall.
-- Enemies should be generated out of bounds with period
-of one second. Add an event for this. Enemies should try
-to overtake the player. Enemy should not walk over
-the walls.
-- If player or any enemy touch the fire - he dies 
+1. Bomb should explode in a few seconds after the planting.
+Remove the bomb after an explosion by method `kill()`.
+2. During the explosion bomb generate a fire in four 
+directions: left, right, up, down. Fire is usual `Sprite` with
+size same to the bomb. Fire cannot spread over the wall. You can
+generate a testing sprite with size and position of a next fire and
+check if it collides the wall, if it does you stop the spreading, if it
+doesn't you continue spread the fire. 
+Fire exists for a small amount of time.
+3. Enemies should be generated out of bounds within one second. 
+Add an event for this. Enemies should charge the player. 
+Enemy should not walk over the walls. [Events](https://realpython.com/pygame-a-primer/#custom-events)
+4. If the player or any enemy touches the fire - he dies 
 immediately.
-- Initially player should have 100 health points. If any
-enemy touches the player - it dies and player's health is
-reduced by 10.
-- If player's health less than or equal to zero - player 
-dies.
-- If player dies, the game is over.
+5. Initially player should have 100 health points. If any
+enemy touches the player - it dies and the player's health is
+reduced by 10. 
+6. If the player's health is less than or equal to zero - the player 
+dies. If the player dies, the game is over.
 
 Example:
 
