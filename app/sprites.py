@@ -1,7 +1,4 @@
-import random
 import pygame
-
-from abc import ABC, abstractmethod
 
 from pygame.locals import RLEACCEL, K_UP, K_DOWN, K_LEFT, K_RIGHT, K_SPACE
 
@@ -39,8 +36,7 @@ class Player(EngineMovingSprite):
         super().__init__()
         self.engine.add_to_group(self, "player")
         self.speed = 5
-        self.surf = pygame.image.load("images/player_front.png").convert()
-        self.surf.set_colorkey((255, 255, 255), RLEACCEL)
+        self.surf = pygame.image.load("images/player_front.png").convert_alpha()
         self.rect = self.surf.get_rect()
         self.placed_bomb_clock = 0
         self.on_bomb = False
@@ -56,22 +52,22 @@ class Player(EngineMovingSprite):
         if pressed_keys[K_UP]:
             self.rect.move_ip(0, -self.speed)
             self.move_collision_out(0, -self.speed)
-            self.surf = pygame.image.load("images/player_back.png").convert()
+            self.surf = pygame.image.load("images/player_back.png").convert_alpha()
 
         if pressed_keys[K_DOWN]:
             self.rect.move_ip(0, self.speed)
             self.move_collision_out(0, self.speed)
-            self.surf = pygame.image.load("images/player_front.png").convert()
+            self.surf = pygame.image.load("images/player_front.png").convert_alpha()
 
         if pressed_keys[K_LEFT]:
             self.rect.move_ip(-self.speed, 0)
             self.move_collision_out(-self.speed, 0)
-            self.surf = pygame.image.load("images/player_left.png").convert()
+            self.surf = pygame.image.load("images/player_left.png").convert_alpha()
 
         if pressed_keys[K_RIGHT]:
             self.rect.move_ip(self.speed, 0)
             self.move_collision_out(self.speed, 0)
-            self.surf = pygame.image.load("images/player_right.png").convert()
+            self.surf = pygame.image.load("images/player_right.png").convert_alpha()
 
         if self.rect.left < 0:
             self.rect.left = 0
@@ -96,7 +92,7 @@ class Wall(EngineSprite):
     def __init__(self, center_pos: tuple):
         super().__init__()
         self.engine.add_to_group(self, "walls")
-        self.surf = pygame.image.load("images/wall.png").convert()
+        self.surf = pygame.image.load("images/wall.png").convert_alpha()
         self.surf.set_colorkey((255, 255, 255), RLEACCEL)
         self.rect = self.surf.get_rect(center=center_pos)
 
@@ -126,7 +122,7 @@ class Bomb(EngineSprite):
     def __init__(self, owner_center: tuple):
         super().__init__()
         self.engine.add_to_group(self, "bombs")
-        self.surf = pygame.image.load("images/bomb.png").convert()
+        self.surf = pygame.image.load("images/bomb.png").convert_alpha()
         self.surf.set_colorkey((255, 255, 255), RLEACCEL)
         self.rect = self.surf.get_rect(center=owner_center)
         self.rect.center = self.get_self_center()
