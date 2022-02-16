@@ -36,10 +36,14 @@ class Player(EngineMovingSprite):
         super().__init__()
         self.engine.add_to_group(self, "player")
         self.speed = 5
-        self.surf = pygame.image.load("images/player_front.png").convert_alpha()
-        self.rect = self.surf.get_rect()
         self.placed_bomb_clock = 0
         self.on_bomb = False
+        self.image_front = pygame.image.load("images/player_front.png").convert_alpha()
+        self.image_back = pygame.image.load("images/player_back.png").convert_alpha()
+        self.image_left = pygame.image.load("images/player_left.png").convert_alpha()
+        self.image_right = pygame.image.load("images/player_right.png").convert_alpha()
+        self.surf = self.image_front
+        self.rect = self.surf.get_rect()
 
     def update(self):
         pressed_keys = pygame.key.get_pressed()
@@ -52,22 +56,22 @@ class Player(EngineMovingSprite):
         if pressed_keys[K_UP]:
             self.rect.move_ip(0, -self.speed)
             self.move_collision_out(0, -self.speed)
-            self.surf = pygame.image.load("images/player_back.png").convert_alpha()
+            self.surf = self.image_back
 
         if pressed_keys[K_DOWN]:
             self.rect.move_ip(0, self.speed)
             self.move_collision_out(0, self.speed)
-            self.surf = pygame.image.load("images/player_front.png").convert_alpha()
+            self.surf = self.image_front
 
         if pressed_keys[K_LEFT]:
             self.rect.move_ip(-self.speed, 0)
             self.move_collision_out(-self.speed, 0)
-            self.surf = pygame.image.load("images/player_left.png").convert_alpha()
+            self.surf = self.image_left
 
         if pressed_keys[K_RIGHT]:
             self.rect.move_ip(self.speed, 0)
             self.move_collision_out(self.speed, 0)
-            self.surf = pygame.image.load("images/player_right.png").convert_alpha()
+            self.surf = self.image_right
 
         if self.rect.left < 0:
             self.rect.left = 0

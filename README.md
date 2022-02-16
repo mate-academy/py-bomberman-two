@@ -12,8 +12,9 @@ Remove the bomb after an explosion by method `kill()`.
 directions: left, right, up, down. Fire is usual `Sprite` with
 size same to the bomb. Fire cannot spread over the wall. You can
 generate a testing sprite with size and position of a next fire and
-check if it collides the wall, if it does you stop the spreading, if it
-doesn't you continue spread the fire. 
+check if it collides the wall, if it does - 
+the fire stops to spread, if it
+doesn't fire continues to spread. 
 Fire exists for a small amount of time.
 3. Enemies should be generated out of bounds within one second. 
 Add an event for this. Enemies should charge the player. 

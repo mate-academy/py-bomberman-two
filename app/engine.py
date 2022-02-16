@@ -9,17 +9,18 @@ from pygame.locals import (
 )
 
 
-class SingletonMeta(type):
+def singleton(class_):
     _instances = {}
 
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            instance = super().__call__(*args, **kwargs)
-            cls._instances[cls] = instance
-        return cls._instances[cls]
+    def get_instances(*args, **kwargs):
+        if class_ not in _instances:
+            _instances[class_] = class_(*args, **kwargs)
+        return _instances[class_]
+    return get_instances
 
 
-class Engine(metaclass=SingletonMeta):
+@singleton
+class Engine:
     def __init__(self, screen, clock):
         self.running = True
         self.screen = screen

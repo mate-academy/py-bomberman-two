@@ -13,7 +13,8 @@ engine = Engine(screen=screen, clock=clock)
 
 player = Player()
 
-Wall.generate_walls((SCREEN_WIDTH, SCREEN_HEIGHT), (DEFAULT_OBJ_SIZE, DEFAULT_OBJ_SIZE))
+Wall.generate_walls((SCREEN_WIDTH, SCREEN_HEIGHT),
+                    (DEFAULT_OBJ_SIZE, DEFAULT_OBJ_SIZE))
 
 engine.running = True
 
