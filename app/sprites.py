@@ -1,6 +1,6 @@
 import pygame
 
-from pygame.locals import RLEACCEL, K_UP, K_DOWN, K_LEFT, K_RIGHT, K_SPACE
+from pygame.locals import K_UP, K_DOWN, K_LEFT, K_RIGHT, K_SPACE
 
 from engine import Engine
 from config import SCREEN_WIDTH, SCREEN_HEIGHT, DEFAULT_OBJ_SIZE
@@ -12,36 +12,29 @@ class EngineMixin:
         self.engine = Engine()
 
 
-class MovingMixin:
-    def move_collision_out(self, x_speed: int, y_speed: int):
-        on_bomb = self.on_bomb if hasattr(self, "on_bomb") else False
-        if (
-            pygame.sprite.spritecollideany(self, self.engine.groups["walls"])
-            or pygame.sprite.spritecollideany(self, self.engine.groups["bombs"])
-            and not on_bomb
-        ):
-            self.rect.move_ip(-x_speed, -y_speed)
-
-
 class EngineSprite(EngineMixin, pygame.sprite.Sprite):
     pass
 
 
-class EngineMovingSprite(EngineMixin, MovingMixin, pygame.sprite.Sprite):
-    pass
-
-
-class Player(EngineMovingSprite):
+class Player(EngineSprite):
     def __init__(self):
         super().__init__()
         self.engine.add_to_group(self, "player")
         self.speed = 5
         self.placed_bomb_clock = 0
-        self.on_bomb = False
-        self.image_front = pygame.image.load("images/player_front.png").convert_alpha()
-        self.image_back = pygame.image.load("images/player_back.png").convert_alpha()
-        self.image_left = pygame.image.load("images/player_left.png").convert_alpha()
-        self.image_right = pygame.image.load("images/player_right.png").convert_alpha()
+        self.is_on_bomb = False
+        self.image_front = pygame.image.load(
+            "images/player_front.png"
+        ).convert_alpha()
+        self.image_back = pygame.image.load(
+            "images/player_back.png"
+        ).convert_alpha()
+        self.image_left = pygame.image.load(
+            "images/player_left.png"
+        ).convert_alpha()
+        self.image_right = pygame.image.load(
+            "images/player_right.png"
+        ).convert_alpha()
         self.surf = self.image_front
         self.rect = self.surf.get_rect()
 
@@ -50,8 +43,10 @@ class Player(EngineMovingSprite):
         if self.placed_bomb_clock:
             self.placed_bomb_clock -= 1
 
-        if not pygame.sprite.spritecollideany(self, self.engine.groups["bombs"]):
-            self.on_bomb = False
+        if not pygame.sprite.spritecollideany(
+                self, self.engine.groups["bombs"]
+        ):
+            self.is_on_bomb = False
 
         if pressed_keys[K_UP]:
             self.rect.move_ip(0, -self.speed)
@@ -85,9 +80,17 @@ class Player(EngineMovingSprite):
         if pressed_keys[K_SPACE]:
             self.place_bomb()
 
+    def move_collision_out(self, x_speed: int, y_speed: int):
+        if (pygame.sprite.spritecollideany(
+            self, self.engine.groups["walls"]
+        ) or pygame.sprite.spritecollideany(
+            self, self.engine.groups["bombs"]
+        ) and not self.is_on_bomb):
+            self.rect.move_ip(-x_speed, -y_speed)
+
     def place_bomb(self):
         if not self.placed_bomb_clock:
-            self.on_bomb = True
+            self.is_on_bomb = True
             Bomb(self.rect.center)
             self.placed_bomb_clock = 45
 
@@ -97,7 +100,6 @@ class Wall(EngineSprite):
         super().__init__()
         self.engine.add_to_group(self, "walls")
         self.surf = pygame.image.load("images/wall.png").convert_alpha()
-        self.surf.set_colorkey((255, 255, 255), RLEACCEL)
         self.rect = self.surf.get_rect(center=center_pos)
 
     @classmethod
@@ -127,7 +129,6 @@ class Bomb(EngineSprite):
         super().__init__()
         self.engine.add_to_group(self, "bombs")
         self.surf = pygame.image.load("images/bomb.png").convert_alpha()
-        self.surf.set_colorkey((255, 255, 255), RLEACCEL)
         self.rect = self.surf.get_rect(center=owner_center)
         self.rect.center = self.get_self_center()
 

@@ -12,11 +12,11 @@ from pygame.locals import (
 def singleton(class_):
     _instances = {}
 
-    def get_instances(*args, **kwargs):
+    def get_instance(*args, **kwargs):
         if class_ not in _instances:
             _instances[class_] = class_(*args, **kwargs)
         return _instances[class_]
-    return get_instances
+    return get_instance
 
 
 @singleton
@@ -44,7 +44,7 @@ class Engine:
         self.all_sprites.add(sprite)
 
     def groups_update(self):
-        groups = [entity for entity in self.groups.values()]
+        groups = list(self.groups.values())
         for group in groups:
             group.update()
 
