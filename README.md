@@ -34,4 +34,4 @@ player's health and speed.
 
 Example:
 
-![Example2](https://user-images.githubusercontent.com/80070761/153884714-8fac9c58-b7c4-4bc2-9c38-e1c698d9eba1.gif)
+![Example](https://user-images.githubusercontent.com/80070761/154238655-75a3d90e-a298-4408-a01a-0d604890334a.gif)
