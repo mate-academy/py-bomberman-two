@@ -19,7 +19,7 @@ doesn't fire continues to spread. To check if sprite collides point
 use `sprite.rect.collidepoint((x, y))`.
 Fire exists for a small amount of time.
 3. Create enemies. Enemies should be generated out of bounds within one second. 
-Add an event for this. Enemies should charge the player. 
+Add an event for this. Enemies should chase the player. 
 The enemy should not walk over the walls or bombs. [Events](https://realpython.com/pygame-a-primer/#custom-events)
 4. If the player or any enemy touches the fire - he dies 
 immediately.
