@@ -26,6 +26,9 @@ IMAGE_FRONT = pygame.image.load("images/player_front.png")
 # Bomb
 BOMB_TIMER = 0
 EXPLODE_TIMER = 120
+EXPLOSION_1 = pygame.image.load("images\\explosion_1.png")
+EXPLOSION_2 = pygame.image.load("images\\explosion_1.png")
+EXPLOSION_3 = pygame.image.load("images\\explosion_1.png")
 
 # Enemy
 ENEMY_TIMER = 120

@@ -2,7 +2,12 @@ import pygame
 
 from sprites import Player, Wall
 from engine import Engine
-from config import SCREEN_WIDTH, SCREEN_HEIGHT, DEFAULT_OBJ_SIZE, BLACK, FRAMES_PER_SECOND
+from config import (
+    SCREEN_WIDTH,
+    SCREEN_HEIGHT,
+    DEFAULT_OBJ_SIZE,
+    BLACK,
+    FRAMES_PER_SECOND)
 
 pygame.init()
 clock = pygame.time.Clock()

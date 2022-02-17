@@ -3,8 +3,12 @@ import pygame
 from pygame.locals import K_UP, K_DOWN, K_LEFT, K_RIGHT, K_SPACE
 
 from engine import Engine
-from config import SCREEN_WIDTH, SCREEN_HEIGHT, DEFAULT_OBJ_SIZE, DEFAULT_PLAYER_HP, DEFAULT_PLAYER_SPEED, IMAGE_LEFT, \
-    IMAGE_RIGHT, IMAGE_FRONT, IMAGE_BACK, BOMB_TIMER, ENEMY_TIMER, DEFAULT_SCORE, EXPLODE_TIMER
+from config import (
+    SCREEN_WIDTH, SCREEN_HEIGHT, DEFAULT_OBJ_SIZE,
+    DEFAULT_PLAYER_HP, DEFAULT_PLAYER_SPEED, IMAGE_LEFT,
+    IMAGE_RIGHT, IMAGE_FRONT, IMAGE_BACK,
+    BOMB_TIMER, ENEMY_TIMER, DEFAULT_SCORE,
+    EXPLODE_TIMER, EXPLOSION_1, EXPLOSION_2, EXPLOSION_3)
 
 
 class EngineMixin:
@@ -164,11 +168,11 @@ class Bomb(EngineSprite):
             self.explode_bomb_clock -= 1
 
             if self.explode_bomb_clock == 40:
-                self.surf = pygame.image.load("images\\explosion_1.png").convert_alpha()
+                self.surf = EXPLOSION_1.convert_alpha()
             if self.explode_bomb_clock == 20:
-                self.surf = pygame.image.load("images\\explosion_2.png").convert_alpha()
+                self.surf = EXPLOSION_2.convert_alpha()
             if self.explode_bomb_clock == 1:
-                self.surf = pygame.image.load("images\\explosion_3.png").convert_alpha()
+                self.surf = EXPLOSION_3.convert_alpha()
                 self.kill()
 
 

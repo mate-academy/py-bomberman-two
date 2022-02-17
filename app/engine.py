@@ -55,7 +55,12 @@ class Engine:
         for sprite in self.all_sprites:
             self.screen.blit(sprite.surf, sprite.rect)
 
-    def draw_current_condition(self, player_health, player_speed, player_score):
+    def draw_current_condition(
+            self,
+            player_health,
+            player_speed,
+            player_score
+    ):
         font = pygame.font.SysFont("comicsans", 14, False)
 
         health = "Health: " + str(player_health)
