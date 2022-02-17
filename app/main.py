@@ -1,5 +1,5 @@
 import pygame
-from app.sprites import Player, Wall
+from app.sprites import Player, Wall, Spider
 from app.engine import Engine
 from app.config import (
     SCREEN_WIDTH,
@@ -17,6 +17,8 @@ engine = Engine(screen=screen, clock=clock)
 
 player = Player()
 
+spider = Spider((670, 375))
+
 Wall.generate_walls((SCREEN_WIDTH, SCREEN_HEIGHT),
                     (DEFAULT_OBJ_SIZE, DEFAULT_OBJ_SIZE))
 engine.player = player
@@ -24,6 +26,8 @@ engine.running = True
 
 while engine.running:
     engine.events_handling()
+
+    spider.create_spider()
 
     engine.groups_update()
 

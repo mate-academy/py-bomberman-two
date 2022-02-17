@@ -1,6 +1,3 @@
-import math
-import random
-
 import pygame
 
 from pygame.locals import K_UP, K_DOWN, K_LEFT, K_RIGHT, K_SPACE
@@ -13,8 +10,7 @@ from app.config import (
     DEFAULT_PLAYER_SPEED,
     BOMB_TIMER,
     EXPLOSION_RANGE,
-    DEFAULT_HEALTH_PLAYER,
-    DEFAULT_SPYDER_SPEED)
+    DEFAULT_SPYDER_SPEED, DEFAULT_PLAYER_HP)
 
 
 class EngineMixin:
@@ -32,9 +28,10 @@ class Player(EngineSprite):
         super().__init__()
         self.engine.add_to_group(self, "player")
         self.placed_bomb_clock = 0
+        self.take_damage = 60
         self.start_timer = None
         self.is_on_bomb = False
-        self.health = DEFAULT_HEALTH_PLAYER
+        self.health = DEFAULT_PLAYER_HP
         self.image_front = pygame.image.load(
             "images/player_front.png"
         ).convert_alpha()
@@ -47,7 +44,6 @@ class Player(EngineSprite):
         self.image_right = pygame.image.load(
             "images/player_right.png"
         ).convert_alpha()
-        self.counter_mobs = 5
         self.surf = self.image_front
         self.rect = self.surf.get_rect()
 
@@ -57,16 +53,8 @@ class Player(EngineSprite):
             self.placed_bomb_clock -= 1
 
         if not pygame.sprite.spritecollideany(
-                self, self.engine.groups["bombs"]
-        ):
+                self, self.engine.groups["bombs"]):
             self.is_on_bomb = False
-
-        if self.counter_mobs:
-            self.counter_mobs -= 1
-            Spider(
-                (random.choice((-450, 650, 0)),
-                 random.choice((150, -50, 650)))
-            )
 
         if pressed_keys[K_UP]:
             self.rect.move_ip(0, -DEFAULT_PLAYER_SPEED)
@@ -243,7 +231,7 @@ class Spider(EngineSprite):
     def __init__(self, center_pos: tuple):
         super().__init__()
         self.speed = DEFAULT_SPYDER_SPEED
-        self.start_time = pygame.time.get_ticks()
+        self.start_time = 60
         self.engine.add_to_group(self, "spiders")
         self.image_front = pygame.image.load(
             "images/spider_front.png"
@@ -262,20 +250,51 @@ class Spider(EngineSprite):
 
     def update(self):
 
-        self.move_towards_player(self.engine.player)
+        spider_x = self.rect.centerx
+        spider_y = self.rect.centery - 25
+
+        if self.engine.player.rect.y <= spider_y:
+            self.rect.move_ip(0, -self.speed)
+            self.move_collision_out(0, -self.speed)
+            self.surf = self.image_back
+        else:
+            self.rect.move_ip(0, self.speed)
+            self.move_collision_out(0, self.speed)
+            self.surf = self.image_front
+
+        if self.engine.player.rect.x <= spider_x:
+            self.rect.move_ip(-self.speed, 0)
+            self.move_collision_out(-self.speed, 0)
+            self.surf = self.image_left
+        else:
+            self.rect.move_ip(self.speed, 0)
+            self.move_collision_out(self.speed, 0)
+            self.surf = self.image_right
+
+        if self.rect.left < 0:
+            self.rect.left = 0
+        if self.rect.right > SCREEN_WIDTH:
+            self.rect.right = SCREEN_WIDTH
+        if self.rect.top < 0:
+            self.rect.top = 0
+        if self.rect.bottom > SCREEN_HEIGHT:
+            self.rect.bottom = SCREEN_HEIGHT
+
         if pygame.sprite.spritecollideany(self, self.engine.groups["fire"]):
             self.engine.score += 10
-            self.engine.player.counter_mobs += 1
             self.kill()
         if pygame.sprite.spritecollideany(self, self.engine.groups["walls"]):
             self.move_collision_out(DEFAULT_SPYDER_SPEED, DEFAULT_SPYDER_SPEED)
 
         if pygame.sprite.spritecollideany(
                 self.engine.player, self.engine.groups["spiders"]):
-            self.engine.player.health -= 10
-            if self.engine.player.health <= 0:
-                self.engine.player.kill()
-            self.engine.running = False
+            self.engine.player.take_damage -= 1
+            if self.engine.player.take_damage == 0:
+                self.engine.player.take_damage = 60
+                self.engine.player.health -= 10
+                if self.engine.player.health <= 0:
+                    self.engine.player.kill()
+                    self.engine.running = False
 
     def move_collision_out(self, x_speed: int, y_speed: int):
         if (pygame.sprite.spritecollideany(
@@ -284,9 +303,8 @@ class Spider(EngineSprite):
                     self, self.engine.groups["bombs"])):
             self.rect.move_ip(-x_speed, -y_speed)
 
-    def move_towards_player(self, player):
-        dx, dy = player.rect.x - self.rect.x, player.rect.y - self.rect.y
-        dist = math.hypot(dx, dy)
-        dx, dy = dx / dist, dy / dist
-        self.rect.x += dx * self.speed / 2
-        self.rect.y += dy * self.speed / 2
+    def create_spider(self):
+        self.start_time -= 1
+        if not self.start_time:
+            Spider((670, 375))
+            self.start_time = 60
