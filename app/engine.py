@@ -29,6 +29,12 @@ class Engine:
         self.groups = defaultdict(pygame.sprite.Group)
         self.all_sprites = pygame.sprite.Group()
 
+        self.kill_count = 0
+
+        # stats
+        pygame.font.init()
+        self.font = pygame.font.SysFont('Comic Sans MS', 30)
+
     def events_handling(self):
         for event in pygame.event.get():
             if event.type == KEYDOWN:
@@ -51,3 +57,8 @@ class Engine:
     def draw_all_sprites(self):
         for sprite in self.all_sprites:
             self.screen.blit(sprite.surf, sprite.rect)
+
+        self.screen.blit(
+            self.font.render(
+                f"Kills: {self.kill_count * 10}", False, (255, 0, 0)), (0, 0)
+        )
