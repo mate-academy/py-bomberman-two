@@ -8,6 +8,8 @@ from pygame.locals import (
     QUIT,
 )
 
+from app.config import DEFAULT_PLAYER_SPEED
+
 
 def singleton(class_):
     _instances = {}
@@ -16,6 +18,7 @@ def singleton(class_):
         if class_ not in _instances:
             _instances[class_] = class_(*args, **kwargs)
         return _instances[class_]
+
     return get_instance
 
 
@@ -25,17 +28,20 @@ class Engine:
         self.running = True
         self.screen = screen
         self.clock = clock
-
+        self.player = None
+        self.score = 0
         self.groups = defaultdict(pygame.sprite.Group)
         self.all_sprites = pygame.sprite.Group()
+        pygame.font.init()
+        self.font_score = pygame.font.SysFont("comicsans", 20, True)
+        self.font_health = pygame.font.SysFont("comicsans", 20, True)
+        self.font_speed = pygame.font.SysFont("comicsans", 20, True)
 
     def events_handling(self):
         for event in pygame.event.get():
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     self.running = False
-
-            # Did user click quit button?
             elif event.type == QUIT:
                 self.running = False
 
@@ -51,3 +57,14 @@ class Engine:
     def draw_all_sprites(self):
         for sprite in self.all_sprites:
             self.screen.blit(sprite.surf, sprite.rect)
+
+    def draw_text(self):
+        self.screen.blit(self.font_score.render(
+            f"Score: {self.score}", False, (255, 0, 0)), (0, 0)
+        )
+        self.screen.blit(self.font_score.render(
+            f"Health: {self.player.health}", False, (0, 255, 0)), (530, 0)
+        )
+        self.screen.blit(self.font_score.render(
+            f"Speed: {DEFAULT_PLAYER_SPEED}", False, (0, 255, 0)), (560, 20)
+        )
