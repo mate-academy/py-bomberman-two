@@ -2,11 +2,7 @@ import pygame
 
 from collections import defaultdict
 
-from pygame.locals import (
-    K_ESCAPE,
-    KEYDOWN,
-    QUIT,
-)
+from pygame.locals import K_ESCAPE, KEYDOWN, QUIT
 
 
 def singleton(class_):
@@ -35,7 +31,6 @@ class Engine:
                 if event.key == K_ESCAPE:
                     self.running = False
 
-            # Did user click quit button?
             elif event.type == QUIT:
                 self.running = False
 

@@ -1,2 +1,5 @@
 flake8==4.0.1
 pygame==2.1.2
+sprites
+engine
+config
