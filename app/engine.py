@@ -8,6 +8,8 @@ from pygame.locals import (
     QUIT,
 )
 
+from app.config import SCREEN_WIDTH, GREEN, BLOOD_RED
+
 
 def singleton(class_):
     _instances = {}
@@ -16,6 +18,7 @@ def singleton(class_):
         if class_ not in _instances:
             _instances[class_] = class_(*args, **kwargs)
         return _instances[class_]
+
     return get_instance
 
 
@@ -51,3 +54,23 @@ class Engine:
     def draw_all_sprites(self):
         for sprite in self.all_sprites:
             self.screen.blit(sprite.surf, sprite.rect)
+
+    def draw_current_condition(
+            self,
+            player_health,
+            player_speed,
+            player_score
+    ):
+        font = pygame.font.SysFont("comicsans", 14, False)
+
+        health = "Health: " + str(player_health)
+        speed = "Speed: " + str(player_speed)
+        score = "Score: " + str(player_score)
+
+        health = font.render(health, True, GREEN)
+        speed = font.render(speed, True, GREEN)
+        score = font.render(score, True, BLOOD_RED)
+
+        self.screen.blit(health, (SCREEN_WIDTH - 78, 0))
+        self.screen.blit(speed, (SCREEN_WIDTH - 60, 20))
+        self.screen.blit(score, (0, 10))
