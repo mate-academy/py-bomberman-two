@@ -28,6 +28,7 @@ while engine.running:
 
     # Draw all sprites
     engine.draw_all_sprites()
+    engine.draw_current_condition(player.health, player.speed)
 
     pygame.display.flip()
     engine.clock.tick(60)

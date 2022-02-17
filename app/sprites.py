@@ -21,7 +21,9 @@ class Player(EngineSprite):
         super().__init__()
         self.engine.add_to_group(self, "player")
         self.speed = 5
+        self.health = 100
         self.placed_bomb_clock = 0
+        self.create_an_enemy = 120
         self.is_on_bomb = False
         self.image_front = pygame.image.load(
             "images/player_front.png"
@@ -40,8 +42,21 @@ class Player(EngineSprite):
 
     def update(self):
         pressed_keys = pygame.key.get_pressed()
+
         if self.placed_bomb_clock:
             self.placed_bomb_clock -= 1
+
+        if self.create_an_enemy:
+            self.create_an_enemy -= 1
+        else:
+            Enemy((0, 0))
+            self.create_an_enemy = 60
+
+        if pygame.sprite.spritecollideany(self, self.engine.groups["enemies"]):
+            self.health -= 10
+            if self.health == 0:
+                self.kill()
+                self.engine.running = False
 
         if not pygame.sprite.spritecollideany(
                 self, self.engine.groups["bombs"]
@@ -131,6 +146,7 @@ class Bomb(EngineSprite):
         self.surf = pygame.image.load("images/bomb.png").convert_alpha()
         self.rect = self.surf.get_rect(center=owner_center)
         self.rect.center = self.get_self_center()
+        self.explode_bomb_clock = 120
 
     def get_self_center(self):
         lines = self.get_line_bomb_placed()
@@ -143,3 +159,49 @@ class Bomb(EngineSprite):
         width = self.rect.centerx // DEFAULT_OBJ_SIZE
         height = self.rect.centery // DEFAULT_OBJ_SIZE
         return width, height
+
+    def update(self):
+        if self.explode_bomb_clock:
+            self.explode_bomb_clock -= 1
+
+            if self.explode_bomb_clock == 40:
+                self.surf = pygame.image.load("images\\explosion_1.png").convert_alpha()
+            if self.explode_bomb_clock == 20:
+                self.surf = pygame.image.load("images\\explosion_2.png").convert_alpha()
+            if self.explode_bomb_clock == 1:
+                self.surf = pygame.image.load("images\\explosion_3.png").convert_alpha()
+                self.kill()
+
+
+class Fire(EngineSprite):
+    def __init__(self, owner_center: tuple):
+        super(Fire, self).__init__()
+        self.engine.add_to_group(self, "fires")
+        self.surf = pygame.image.load("images/bomb.png").convert_alpha()
+        self.rect = self.surf.get_rect(center=owner_center)
+        self.rect.center = self.get_self_center()
+
+    def get_self_center(self):
+        lines = self.get_line_bomb_placed()
+        return (
+            lines[0] * DEFAULT_OBJ_SIZE + self.rect.width // 2,
+            lines[1] * DEFAULT_OBJ_SIZE + self.rect.height // 2,
+        )
+
+    def get_line_bomb_placed(self):
+        width = self.rect.centerx // DEFAULT_OBJ_SIZE
+        height = self.rect.centery // DEFAULT_OBJ_SIZE
+        return width, height
+    # TODO make 2rd task
+
+
+class Enemy(EngineSprite):
+    def __init__(self, center_: (0, 0)):
+        super(Enemy, self).__init__()
+        self.engine.add_to_group(self, "enemies")
+        self.surf = pygame.image.load("images\\spider_left.png")
+        self.rect = self.surf.get_rect(center=center_)
+
+    def update(self):
+        if pygame.sprite.spritecollideany(self, self.engine.groups["player"]):
+            self.kill()
