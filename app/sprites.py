@@ -203,8 +203,10 @@ class Fire(EngineSprite):
         centers = []
         for i in range(DEFAULT_FIRE_LENGTH):
             next_center = (
-                (starting_point[0]) + DEFAULT_OBJ_SIZE * (i + 1) * direction[0],
-                (starting_point[1]) + DEFAULT_OBJ_SIZE * (i + 1) * direction[1],
+                (starting_point[0])
+                + DEFAULT_OBJ_SIZE * (i + 1) * direction[0],
+                (starting_point[1])
+                + DEFAULT_OBJ_SIZE * (i + 1) * direction[1],
             )
             centers.append(next_center)
         return centers
@@ -221,7 +223,9 @@ class Fire(EngineSprite):
         for direction in directions:
             for center in direction:
                 new_fire = Fire(center)
-                if pygame.sprite.spritecollideany(new_fire, new_fire.engine.groups['walls']):
+                if pygame.sprite.spritecollideany(
+                        new_fire, new_fire.engine.groups['walls']
+                ):
                     new_fire.kill()
                     break
         Fire(starting_poit)
@@ -231,14 +235,16 @@ class Enemy(EngineSprite):
     def __init__(self):
         super().__init__()
         self.engine.add_to_group(self, "enemies")
-        self.surf = pygame.image.load("images/spider_front.png").convert_alpha()
+        self.surf = pygame.image.load(
+            "images/spider_front.png").convert_alpha()
         self.rect = self.surf.get_rect(center=(0, 0))
         self.speed = 3
 
     def move(self, direction: tuple):
         self.rect.move_ip(direction[0], direction[1])
         if (pygame.sprite.spritecollideany(self, self.engine.groups['walls'])
-                or pygame.sprite.spritecollideany(self, self.engine.groups['bombs'])):
+                or pygame.sprite.spritecollideany(
+                    self, self.engine.groups['bombs'])):
             self.rect.move_ip(-direction[0], -direction[1])
             return False
         return True

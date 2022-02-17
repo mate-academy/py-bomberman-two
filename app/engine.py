@@ -58,4 +58,7 @@ class Engine:
         for sprite in self.all_sprites:
             self.screen.blit(sprite.surf, sprite.rect)
 
-        self.screen.blit(self.font.render(f"Kills: {self.kill_count * 10}", False, (255, 0, 0)), (0, 0))
+        self.screen.blit(
+            self.font.render(
+                f"Kills: {self.kill_count * 10}", False, (255, 0, 0)), (0, 0)
+        )
