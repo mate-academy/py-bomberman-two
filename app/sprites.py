@@ -3,7 +3,8 @@ import pygame
 from pygame.locals import K_UP, K_DOWN, K_LEFT, K_RIGHT, K_SPACE
 
 from engine import Engine
-from config import SCREEN_WIDTH, SCREEN_HEIGHT, DEFAULT_OBJ_SIZE
+from config import SCREEN_WIDTH, SCREEN_HEIGHT, DEFAULT_OBJ_SIZE, DEFAULT_PLAYER_HP, DEFAULT_PLAYER_SPEED, IMAGE_LEFT, \
+    IMAGE_RIGHT, IMAGE_FRONT, IMAGE_BACK, BOMB_TIMER, ENEMY_TIMER, DEFAULT_SCORE, EXPLODE_TIMER
 
 
 class EngineMixin:
@@ -20,31 +21,27 @@ class Player(EngineSprite):
     def __init__(self):
         super().__init__()
         self.engine.add_to_group(self, "player")
-        self.speed = 5
-        self.health = 100
-        self.placed_bomb_clock = 0
-        self.create_an_enemy = 120
+        self.speed = DEFAULT_PLAYER_SPEED
+        self.health = DEFAULT_PLAYER_HP
+
+        self.bomb_timer = BOMB_TIMER
+        self.create_an_enemy = ENEMY_TIMER
         self.is_on_bomb = False
-        self.image_front = pygame.image.load(
-            "images/player_front.png"
-        ).convert_alpha()
-        self.image_back = pygame.image.load(
-            "images/player_back.png"
-        ).convert_alpha()
-        self.image_left = pygame.image.load(
-            "images/player_left.png"
-        ).convert_alpha()
-        self.image_right = pygame.image.load(
-            "images/player_right.png"
-        ).convert_alpha()
+        # Images
+        self.image_front = IMAGE_FRONT.convert_alpha()
+        self.image_back = IMAGE_BACK.convert_alpha()
+        self.image_left = IMAGE_LEFT.convert_alpha()
+        self.image_right = IMAGE_RIGHT.convert_alpha()
+
         self.surf = self.image_front
         self.rect = self.surf.get_rect()
+        self.score = DEFAULT_SCORE
 
     def update(self):
         pressed_keys = pygame.key.get_pressed()
 
-        if self.placed_bomb_clock:
-            self.placed_bomb_clock -= 1
+        if self.bomb_timer:
+            self.bomb_timer -= 1
 
         if self.create_an_enemy:
             self.create_an_enemy -= 1
@@ -54,6 +51,8 @@ class Player(EngineSprite):
 
         if pygame.sprite.spritecollideany(self, self.engine.groups["enemies"]):
             self.health -= 10
+            self.score += 10
+
             if self.health == 0:
                 self.kill()
                 self.engine.running = False
@@ -104,10 +103,10 @@ class Player(EngineSprite):
             self.rect.move_ip(-x_speed, -y_speed)
 
     def place_bomb(self):
-        if not self.placed_bomb_clock:
+        if not self.bomb_timer:
             self.is_on_bomb = True
             Bomb(self.rect.center)
-            self.placed_bomb_clock = 45
+            self.bomb_timer = 45
 
 
 class Wall(EngineSprite):
@@ -146,7 +145,7 @@ class Bomb(EngineSprite):
         self.surf = pygame.image.load("images/bomb.png").convert_alpha()
         self.rect = self.surf.get_rect(center=owner_center)
         self.rect.center = self.get_self_center()
-        self.explode_bomb_clock = 120
+        self.explode_bomb_clock = EXPLODE_TIMER
 
     def get_self_center(self):
         lines = self.get_line_bomb_placed()
@@ -204,4 +203,5 @@ class Enemy(EngineSprite):
 
     def update(self):
         if pygame.sprite.spritecollideany(self, self.engine.groups["player"]):
+            print(self.engine.groups["player"])
             self.kill()
