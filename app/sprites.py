@@ -20,10 +20,9 @@ class Player(EngineSprite):
     def __init__(self):
         super().__init__()
         self.engine.add_to_group(self, "player")
-        self.speed = 5
+        self.speed = self.engine.speed
         self.placed_bomb_clock = 0
         self.is_on_bomb = False
-        self.health = 100
         self.image_front = pygame.image.load(
             "images/player_front.png"
         ).convert_alpha()
@@ -45,6 +44,12 @@ class Player(EngineSprite):
             self.placed_bomb_clock -= 1
 
         if pygame.sprite.spritecollideany(self, self.engine.groups["fire"]):
+            self.kill()
+
+        if pygame.sprite.spritecollideany(self, self.engine.groups["enemy"]):
+            self.engine.player_health -= 10
+
+        if not self.engine.player_health:
             self.kill()
 
         if not pygame.sprite.spritecollideany(
@@ -241,18 +246,15 @@ class Enemy(EngineSprite):
         self.timer = 60
 
     def update(self):
-        if pygame.sprite.spritecollideany(self, self.engine.groups["fire"]):
+        if (pygame.sprite.spritecollideany(self, self.engine.groups["fire"])
+                or pygame.sprite.spritecollideany(
+                    self, self.engine.groups["player"])):
+            self.engine.score += 10
             self.kill()
-        player_x = 0
-        player_y = 0
-        for current_player in self.engine.groups['player']:
-            player_x = current_player.rect[0]
-            player_y = current_player.rect[1]
 
-        enemy_x = self.rect.centerx
-        enemy_y = self.rect.centery - 25
+        player = self.engine.groups['player'].sprites()[0]
 
-        if player_y <= enemy_y:
+        if self.rect.centery - player.rect.centery > 0:
             self.rect.move_ip(0, -self.speed)
             self.move_collision_out(0, -self.speed)
             self.surf = self.image_back
@@ -261,7 +263,7 @@ class Enemy(EngineSprite):
             self.move_collision_out(0, self.speed)
             self.surf = self.image_front
 
-        if player_x <= enemy_x:
+        if self.rect.centerx - player.rect.centerx > 0:
             self.rect.move_ip(-self.speed, 0)
             self.move_collision_out(-self.speed, 0)
             self.surf = self.image_left
@@ -284,8 +286,6 @@ class Enemy(EngineSprite):
                 or pygame.sprite.spritecollideany(
                     self, self.engine.groups["bombs"])):
             self.rect.move_ip(-x_speed, -y_speed)
-        if pygame.sprite.spritecollideany(self, self.engine.groups["player"]):
-            self.kill()
 
     def create_enemy(self):
         self.timer -= 1
