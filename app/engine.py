@@ -2,11 +2,7 @@ import pygame
 
 from collections import defaultdict
 
-from pygame.locals import (
-    K_ESCAPE,
-    KEYDOWN,
-    QUIT,
-)
+from pygame.locals import K_ESCAPE, KEYDOWN, QUIT
 
 
 def singleton(class_):
@@ -25,9 +21,13 @@ class Engine:
         self.running = True
         self.screen = screen
         self.clock = clock
-
+        self.score = 0
+        self.player_health = 100
+        self.speed = 5
         self.groups = defaultdict(pygame.sprite.Group)
         self.all_sprites = pygame.sprite.Group()
+        pygame.font.init()
+        self.font = pygame.font.SysFont("comicsans", 15, True)
 
     def events_handling(self):
         for event in pygame.event.get():
@@ -35,7 +35,6 @@ class Engine:
                 if event.key == K_ESCAPE:
                     self.running = False
 
-            # Did user click quit button?
             elif event.type == QUIT:
                 self.running = False
 
@@ -51,3 +50,10 @@ class Engine:
     def draw_all_sprites(self):
         for sprite in self.all_sprites:
             self.screen.blit(sprite.surf, sprite.rect)
+
+        self.screen.blit(self.font.render(
+            f"Score: {self.score}", False, (255, 0, 0)), (0, 0))
+        self.screen.blit(self.font.render(
+            f"Health: {self.player_health}", False, (0, 255, 0)), (550, 0))
+        self.screen.blit(self.font.render(
+            f"Speed: {self.speed}", False, (0, 255, 0)), (550, 20))
