@@ -1,9 +1,12 @@
+import random
+
 import pygame
 
 from pygame.locals import K_UP, K_DOWN, K_LEFT, K_RIGHT, K_SPACE
 
 from engine import Engine
-from config import SCREEN_WIDTH, SCREEN_HEIGHT, DEFAULT_OBJ_SIZE
+from config import SCREEN_WIDTH, SCREEN_HEIGHT, DEFAULT_OBJ_SIZE, \
+    DEFAULT_PLAYER_SPEED, DEFAULT_PLAYER_HP, BOMB_TIMER
 
 
 class EngineMixin:
@@ -20,9 +23,10 @@ class Player(EngineSprite):
     def __init__(self):
         super().__init__()
         self.engine.add_to_group(self, "player")
-        self.speed = 5
+        self.speed = DEFAULT_PLAYER_SPEED
         self.placed_bomb_clock = 0
         self.is_on_bomb = False
+        self.hp = DEFAULT_PLAYER_HP
         self.image_front = pygame.image.load(
             "images/player_front.png"
         ).convert_alpha()
@@ -80,6 +84,14 @@ class Player(EngineSprite):
         if pressed_keys[K_SPACE]:
             self.place_bomb()
 
+        if pygame.sprite.spritecollideany(
+                self, self.engine.groups["explosions"]
+        ):
+            self.hp = 0
+
+        if self.hp > 100:
+            self.hp = 100
+
     def move_collision_out(self, x_speed: int, y_speed: int):
         if (pygame.sprite.spritecollideany(
             self, self.engine.groups["walls"]
@@ -131,6 +143,7 @@ class Bomb(EngineSprite):
         self.surf = pygame.image.load("images/bomb.png").convert_alpha()
         self.rect = self.surf.get_rect(center=owner_center)
         self.rect.center = self.get_self_center()
+        self.time_to_explosion = 0
 
     def get_self_center(self):
         lines = self.get_line_bomb_placed()
@@ -143,3 +156,157 @@ class Bomb(EngineSprite):
         width = self.rect.centerx // DEFAULT_OBJ_SIZE
         height = self.rect.centery // DEFAULT_OBJ_SIZE
         return width, height
+
+    def update(self):
+        self.time_to_explosion += 1
+        if self.time_to_explosion == BOMB_TIMER:
+            self.explode()
+            self.kill()
+
+    def explode(self):
+
+        Explosion(self.rect.center)
+
+        for i in range(1, 6):
+            explosion = Explosion(
+                (self.rect.centerx, self.rect.centery - DEFAULT_OBJ_SIZE * i)
+            )
+            if pygame.sprite.spritecollideany(
+                    explosion, self.engine.groups["walls"]
+            ):
+                explosion.kill()
+                break
+
+        for i in range(1, 6):
+            explosion = Explosion(
+                (self.rect.centerx, self.rect.centery + DEFAULT_OBJ_SIZE * i)
+            )
+            if pygame.sprite.spritecollideany(
+                    explosion, self.engine.groups["walls"]
+            ):
+                explosion.kill()
+                break
+
+        for i in range(1, 6):
+            explosion = Explosion(
+                (self.rect.centerx - DEFAULT_OBJ_SIZE * i, self.rect.centery)
+            )
+            if pygame.sprite.spritecollideany(
+                    explosion, self.engine.groups["walls"]
+            ):
+                explosion.kill()
+                break
+
+        for i in range(1, 6):
+            explosion = Explosion(
+                (self.rect.centerx + DEFAULT_OBJ_SIZE * i, self.rect.centery)
+            )
+            if pygame.sprite.spritecollideany(
+                    explosion, self.engine.groups["walls"]
+            ):
+                explosion.kill()
+                break
+
+
+class Explosion(EngineSprite):
+    def __init__(self, owner_center: tuple):
+        super().__init__()
+        self.engine.add_to_group(self, "explosions")
+        self.explosion_1 = pygame.image.load("images/explosion_1.png")
+        self.explosion_2 = pygame.image.load("images/explosion_2.png")
+        self.explosion_3 = pygame.image.load("images/explosion_3.png")
+        self.surf = self.explosion_1
+        self.rect = self.surf.get_rect(center=owner_center)
+        self.time_of_explosion = 0
+
+    def update(self):
+        self.time_of_explosion += 1
+        self.explosion_render()
+
+    def explosion_render(self):
+        if self.time_of_explosion == 5:
+            self.surf = self.explosion_2
+        if self.time_of_explosion == 10:
+            self.surf = self.explosion_3
+        if self.time_of_explosion == 15:
+            self.kill()
+
+
+class Enemy(EngineSprite):
+    def __init__(self):
+        super().__init__()
+        self.engine.add_to_group(self, "enemies")
+        self.enemy_image_front = pygame.image.load(
+            "images/spider_front.png"
+        ).convert_alpha()
+        self.enemy_image_back = pygame.image.load(
+            "images/spider_back.png"
+        ).convert_alpha()
+        self.enemy_image_left = pygame.image.load(
+            "images/spider_left.png"
+        ).convert_alpha()
+        self.enemy_image_right = pygame.image.load(
+            "images/spider_right.png"
+        ).convert_alpha()
+        self.surf = self.enemy_image_left
+        self.rect = self.surf.get_rect(
+            center=(
+                (SCREEN_WIDTH + 100),
+                random.randint(0, SCREEN_HEIGHT),
+            )
+        )
+        self.start_time = 120
+        self.speed = 2
+
+    def update(self):
+        try:
+            player = self.engine.groups["player"].sprites()[0]
+            x_diff = self.rect.centerx - player.rect.centerx
+            y_diff = self.rect.centery - player.rect.centery
+
+            if x_diff >= 0:
+                self.rect.move_ip(-self.speed, 0)
+                self.move_collision_out(-self.speed, 0)
+                self.surf = self.enemy_image_left
+            elif x_diff <= 0:
+                self.rect.move_ip(self.speed, 0)
+                self.move_collision_out(self.speed, 0)
+                self.surf = self.enemy_image_right
+            if y_diff >= 0:
+                self.rect.move_ip(0, -self.speed)
+                self.move_collision_out(0, -self.speed)
+                self.surf = self.enemy_image_back
+            elif y_diff <= 0:
+                self.rect.move_ip(0, self.speed)
+                self.move_collision_out(0, self.speed)
+                self.surf = self.enemy_image_front
+
+            if pygame.sprite.spritecollideany(
+                    self, self.engine.groups["explosions"]
+            ):
+                player.hp += 10
+                self.engine.score += 10
+                self.kill()
+
+            if pygame.sprite.spritecollideany(
+                    self, self.engine.groups["player"]
+            ):
+                player.hp -= 10
+                self.engine.score += 10
+                self.kill()
+        except IndexError:
+            pass
+
+    def create_enemy(self):
+        self.start_time -= 1
+        if not self.start_time:
+            Enemy()
+            self.start_time = 120
+
+    def move_collision_out(self, x_speed: int, y_speed: int):
+        if (pygame.sprite.spritecollideany(
+            self, self.engine.groups["walls"]
+        ) or pygame.sprite.spritecollideany(
+            self, self.engine.groups["bombs"]
+        )):
+            self.rect.move_ip(-x_speed, -y_speed)

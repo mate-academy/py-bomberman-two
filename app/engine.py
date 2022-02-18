@@ -8,6 +8,8 @@ from pygame.locals import (
     QUIT,
 )
 
+from app.config import DEFAULT_PLAYER_SPEED
+
 
 def singleton(class_):
     _instances = {}
@@ -25,7 +27,12 @@ class Engine:
         self.running = True
         self.screen = screen
         self.clock = clock
-
+        self.score = 0
+        pygame.font.init()
+        self.font_score = pygame.font.SysFont("comicsans", 20, True)
+        self.font_health = pygame.font.SysFont("comicsans", 20, True)
+        self.font_speed = pygame.font.SysFont("comicsans", 20, True)
+        self.font_game_over = pygame.font.SysFont("comicsans", 40, True)
         self.groups = defaultdict(pygame.sprite.Group)
         self.all_sprites = pygame.sprite.Group()
 
@@ -51,3 +58,25 @@ class Engine:
     def draw_all_sprites(self):
         for sprite in self.all_sprites:
             self.screen.blit(sprite.surf, sprite.rect)
+
+    def draw_text(self):
+        self.screen.blit(self.font_score.render(
+            f"Score: {self.score}", False, (255, 0, 0)), (0, 0)
+        )
+        self.screen.blit(self.font_score.render(
+            f"Health: {self.groups['player'].sprites()[0].hp}",
+            False, (0, 255, 0)), (530, 0)
+        )
+        self.screen.blit(self.font_score.render(
+            f"Speed: {DEFAULT_PLAYER_SPEED}",
+            False, (0, 255, 0)), (560, 20)
+        )
+
+    def draw_game_over(self):
+        if self.groups['player'].sprites()[0].hp == 0:
+            self.screen.blit(self.font_game_over.render(
+                "Game over", False, (255, 0, 0)), (300, 300)
+            )
+
+            self.groups['player'].sprites()[0].kill()
+            self.running = False
