@@ -1,21 +1,12 @@
 import pygame
 
-from sprites import Player, Wall
-from engine import Engine
-from config import SCREEN_WIDTH, SCREEN_HEIGHT, DEFAULT_OBJ_SIZE
+from sprites import Wall
+from sprites import engine
+from config import SCREEN_WIDTH, SCREEN_HEIGHT, DEFAULT_OBJECT_SIZE
 
-
-pygame.init()
-clock = pygame.time.Clock()
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-
-engine = Engine(screen=screen, clock=clock)
-
-player = Player()
 
 Wall.generate_walls((SCREEN_WIDTH, SCREEN_HEIGHT),
-                    (DEFAULT_OBJ_SIZE, DEFAULT_OBJ_SIZE))
-
+                    (DEFAULT_OBJECT_SIZE, DEFAULT_OBJECT_SIZE))
 engine.running = True
 
 while engine.running:
@@ -25,7 +16,7 @@ while engine.running:
     engine.groups_update()
 
     engine.screen.fill((0, 0, 0))
-
+    engine.redrawGameWindow()
     # Draw all sprites
     engine.draw_all_sprites()
 
