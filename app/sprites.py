@@ -293,8 +293,8 @@ class Enemy(EngineSprite):
     def move_collision_out(self, x_speed: int, y_speed: int):
         if (pygame.sprite.spritecollideany
             (self, self.engine.groups["walls"])
-                or pygame.sprite.spritecollideany
-                    (self, self.engine.groups["bombs"])):
+            or pygame.sprite.spritecollideany
+                (self, self.engine.groups["bombs"])):
             self.rect.move_ip(-x_speed, -y_speed)
 
     def create_enemy(self):
