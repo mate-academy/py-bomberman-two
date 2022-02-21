@@ -160,7 +160,7 @@ class Bomberman:
                 (-self.config.DEFAULT_OBJECT_SIZE, 0),
                 (0, self.config.DEFAULT_OBJECT_SIZE),
                 (0, -self.config.DEFAULT_OBJECT_SIZE)
-                          ):
+        ):
             new_coordinates = (
                 bomb.rect.center[0] + direction[0],
                 bomb.rect.center[1] + direction[1]
