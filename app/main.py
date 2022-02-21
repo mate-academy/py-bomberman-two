@@ -28,6 +28,7 @@ class Bomberman:
         pygame.init()
         self.clock = pygame.time.Clock()
         self.config = Config()
+        self.font = pygame.font.SysFont("comicsans", 15)
 
         self.screen = pygame.display.set_mode(
             [self.config.SCREEN_WIDTH, self.config.SCREEN_HEIGHT]
@@ -73,6 +74,7 @@ class Bomberman:
             self._enemies_update()
 
             self.screen.fill(self.config.BACKGROUND_COLOR)
+            self._show_statistics()
             for sprite in self.all_sprites:
                 self.screen.blit(sprite.image, sprite.rect)
 
@@ -234,6 +236,20 @@ class Bomberman:
                 enemy.target = ["Down", 100]
             else:
                 enemy.target = ["Up", 100]
+
+    def _show_statistics(self):
+        score = self.font.render(
+            "Score: " + str(self.player.score), True, (255, 0, 0)
+        )
+        health = self.font.render(
+            "Health: " + str(self.player.health), True, (0, 255, 0)
+        )
+        speed = self.font.render(
+            "Speed: " + str(self.player.speed), True, (0, 255, 0)
+        )
+        self.screen.blit(score, (10, 15))
+        self.screen.blit(health, (self.config.SCREEN_WIDTH - 100, 5))
+        self.screen.blit(speed, (self.config.SCREEN_WIDTH - 80, 25))
 
 
 if __name__ == '__main__':
