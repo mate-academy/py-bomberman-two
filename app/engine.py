@@ -2,6 +2,8 @@ import pygame
 
 from collections import defaultdict
 
+from app.config import DEFAULT_PLAYER_SPEED
+
 from pygame.locals import (
     K_ESCAPE,
     KEYDOWN,
@@ -25,9 +27,14 @@ class Engine:
         self.running = True
         self.screen = screen
         self.clock = clock
+        self.score = 0
 
         self.groups = defaultdict(pygame.sprite.Group)
         self.all_sprites = pygame.sprite.Group()
+        pygame.font.init()
+        self.font_score = pygame.font.SysFont("freesans", 20, True)
+        self.font_health = pygame.font.SysFont("freesans", 20, True)
+        self.font_speed = pygame.font.SysFont("freesans", 20, True)
 
     def events_handling(self):
         for event in pygame.event.get():
@@ -51,3 +58,14 @@ class Engine:
     def draw_all_sprites(self):
         for sprite in self.all_sprites:
             self.screen.blit(sprite.surf, sprite.rect)
+
+    def indicators(self):
+        self.screen.blit(self.font_score.render(
+            f"Score: {self.score}", False, (255, 0, 0)), (50, 0)
+        )
+        self.screen.blit(self.font_score.render(
+            f"Health: {self.player.health}", False, (0, 255, 0)), (500, 0)
+        )
+        self.screen.blit(self.font_score.render(
+            f"Speed: {DEFAULT_PLAYER_SPEED}", False, (0, 255, 0)), (500, 20)
+        )
